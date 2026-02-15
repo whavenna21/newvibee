@@ -163,6 +163,70 @@
       font-weight:900;font-size:12px
     }
     .hidden{display:none !important}
+  
+    /* =========================
+       Mobile enhancements (mantém desktop igual)
+       ========================= */
+    @media (max-width: 720px){
+      .wrap{padding:14px}
+      header{gap:10px}
+      .logo{width:48px;height:48px}
+      h1{font-size:18px}
+      .sub{font-size:12.5px}
+
+      .topActions{width:100%}
+      .topActions .pill{flex:1}
+      .topActions button{flex:1; padding:12px 12px}
+
+      .tabs{gap:8px}
+      .tabBtn{flex:1; text-align:center; padding:11px 12px}
+
+      .grid4{grid-template-columns:repeat(2,1fr)}
+      .kpi .value{font-size:17px}
+
+      /* Filtros em 1 coluna (mais fácil no toque) */
+      .controls{grid-template-columns:1fr !important}
+      input,select{padding:12px 12px; font-size:16px} /* 16px evita zoom no iOS */
+      label{font-size:12px}
+    }
+
+    @media (max-width: 480px){
+      .grid4{grid-template-columns:1fr}
+      .topActions button{width:100%}
+    }
+
+    
+    /* Modo "cards" automático para tabelas no celular */
+    @media (max-width: 720px){
+      table{min-width:0}
+      thead{display:none}
+      tbody tr{
+        display:block;
+        margin:10px 0;
+        border:1px solid var(--line);
+        border-radius:14px;
+        overflow:hidden;
+        background:rgba(255,122,0,.04);
+      }
+      tbody td{
+        display:flex;
+        justify-content:space-between;
+        gap:12px;
+        border-bottom:1px solid rgba(36,50,74,.18);
+      }
+      tbody td::before{
+        content: attr(data-label);
+        font-weight:900;
+        color: var(--muted);
+        white-space:nowrap;
+      }
+      tbody td:last-child{border-bottom:none}
+    }
+
+
+    /* Scroll da tabela mais confortável no mobile */
+    .tableWrap{ -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+
   </style>
 </head>
 
@@ -788,7 +852,7 @@ function renderVendas(){
   for(const r of vendasFiltradas.slice(0,1000)){
     const tr=document.createElement("tr");
     for(const h of vendasHeader){
-      const td=document.createElement("td"); td.textContent=norm(r[h]); tr.appendChild(td);
+      const td=document.createElement("td"); td.textContent=norm(r[h]); td.setAttribute("data-label", h); td.setAttribute("data-label", h); tr.appendChild(td);
     }
     body.appendChild(tr);
   }
@@ -817,7 +881,7 @@ function renderPendencias(){
       getCell(r,v.codEnvio) || "—",
     ];
     vals.forEach((val,idx)=>{
-      const td=document.createElement("td"); td.textContent=norm(val);
+      const td=document.createElement("td"); td.textContent=norm(val); td.setAttribute("data-label", ["Pedido","Produto","Cor","Venda","Lucro","Envio","Cód"][idx] || "");
       if(idx===4 && isFinite(x.lucro)){ td.className = x.lucro>0?"good":(x.lucro<0?"bad":""); td.style.fontWeight="950"; }
       tr.appendChild(td);
     });
@@ -869,7 +933,7 @@ function renderStockQuick(){
     const stockTxt = isFinite(it.stock) ? it.stock.toLocaleString("pt-BR") : "—";
     const saldoTxt = isFinite(it.saldo) ? it.saldo.toLocaleString("pt-BR") : "—";
     [it.prodName, it.detName||"—", it.qtySold.toLocaleString("pt-BR"), stockTxt, saldoTxt].forEach((val,idx2)=>{
-      const td=document.createElement("td"); td.textContent=norm(val);
+      const td=document.createElement("td"); td.textContent=norm(val); td.setAttribute("data-label", ["Pedido","Produto","Cor","Venda","Lucro","Envio","Cód"][idx] || "");
       if(idx2===4 && isFinite(it.saldo)){ td.className = it.saldo<0?"bad":(it.saldo===0?"warn":"good"); td.style.fontWeight="950"; }
       tr.appendChild(td);
     });
@@ -883,7 +947,7 @@ function renderProdutosTable(rows){
   const body = el("tbodyProdutos"); body.innerHTML="";
   for(const r of rows.slice(0,1000)){
     const tr=document.createElement("tr");
-    for(const h of prodHeader){ const td=document.createElement("td"); td.textContent=norm(r[h]); tr.appendChild(td); }
+    for(const h of prodHeader){ const td=document.createElement("td"); td.textContent=norm(r[h]); td.setAttribute("data-label", h); td.setAttribute("data-label", h); tr.appendChild(td); }
     body.appendChild(tr);
   }
 }
@@ -973,7 +1037,7 @@ function renderProdutosAgregado(){
       isFinite(saldo)?saldo.toLocaleString("pt-BR"):"—",
     ];
     cells.forEach((val,idx2)=>{
-      const td=document.createElement("td"); td.textContent=norm(val);
+      const td=document.createElement("td"); td.textContent=norm(val); td.setAttribute("data-label", ["Pedido","Produto","Cor","Venda","Lucro","Envio","Cód"][idx] || "");
       if(idx2===4){ td.className = it.lucro>0?"good":(it.lucro<0?"bad":""); td.style.fontWeight="950"; }
       if(idx2===8 && isFinite(saldo)){ td.className = saldo<0?"bad":(saldo===0?"warn":"good"); td.style.fontWeight="950"; }
       tr.appendChild(td);
