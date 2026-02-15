@@ -726,7 +726,6 @@ function renderVendas(){
 
   el("kpiRows").textContent = vendasFiltradas.length.toLocaleString("pt-BR");
 
-  // KPIs principais seguem os filtros atuais
   let rev=0,cst=0,prof=0, revOk=0,cstOk=0,profOk=0;
   for(const r of vendasFiltradas){
     const x = calcLinha(r);
@@ -736,30 +735,11 @@ function renderVendas(){
   }
   el("kpiRev").textContent = fmtBRL(revOk?rev:NaN);
   el("kpiCost").textContent = fmtBRL(cstOk?cst:NaN);
-
-  // ✅ Lucro do período (mês) selecionado
-  // Se você selecionar um mês, este KPI mostra a SOMA do lucro desse mês,
-  // independentemente dos outros filtros (pedido/produto/cor/busca).
-  const selMonth = el("qMonth").value;
-  let profM=0, profMOk=0;
-
-  if(selMonth){
-    for(const r of vendasRows){
-      const mk = monthKeyFromDateStr(getCell(r,v.dataVenda));
-      if(mk !== selMonth) continue;
-      const x = calcLinha(r);
-      if(isFinite(x.lucro)){ profM += x.lucro; profMOk++; }
-    }
-  } else {
-    // Sem mês selecionado, usa o lucro do conjunto filtrado atual
-    profM = prof;
-    profMOk = profOk;
-  }
-
   const profitEl = el("kpiProfit");
-  profitEl.textContent = fmtBRL(profMOk?profM:NaN);
-  profitEl.className = "value " + (profM>0 ? "good" : (profM<0 ? "bad" : ""));
-// warnings
+  profitEl.textContent = fmtBRL(profOk?prof:NaN);
+  profitEl.className = "value " + (prof>0 ? "good" : (prof<0 ? "bad" : ""));
+
+  // warnings
   const w=[];
   const need = ["produto","pedido","venda","lucro","dataVenda"];
   const labels = {
